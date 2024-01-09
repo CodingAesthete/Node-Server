@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const { products } = require('./data');
+const logger = require('./logger');
+const authorize = require('./authorize')
 
 app.use(express.static('./navbar-app'))
 
@@ -48,6 +50,11 @@ app.get('/api/v1/query', (req, res) => {
     return res.status(200).json({ success: true, data: [] })
   }
   res.status(200).json(sortedProducts);
+})
+
+app.get('/api/secret', [logger, authorize], (req, res) => {
+  console.log(req.user)
+  res.send('You opened Top Secret')
 })
 
 app.listen(5000, () => {
