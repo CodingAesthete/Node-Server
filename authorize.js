@@ -3,8 +3,9 @@ const authorize = (req, res, next) => {
   if (user === 'alex') {
     req.user = { name: 'alex', id: 6 }
     next();
+  } else {
+    res.status(401).send('Unathorized');
   }
-  res.status(401).send('Unathorized');
 }
 
 module.exports = authorize;
