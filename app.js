@@ -1,11 +1,16 @@
 const express = require('express');
 const app = express();
 const { products } = require('./data');
+let { people } = require('./data')
 const logger = require('./logger');
 const authorize = require('./authorize')
 
+app.use(express.static('./methods_public'))
 app.use(express.static('./navbar-app'))
+app.use(express.urlencoded({ extended: false }))
+app.use(express.json())
 
+//products
 app.get('/api', (req, res) => {
   res.send('<h1> Home Page</h1><a href="/api/products">products</a>')
 });
@@ -55,6 +60,40 @@ app.get('/api/v1/query', (req, res) => {
 app.get('/api/secret', [logger, authorize], (req, res) => {
   console.log(req.user)
   res.send('You opened Top Secret')
+})
+
+//people
+app.get('/api/people', (req, res) => {
+  res.status(200).json({ success: true, data: people })
+})
+
+app.post('/api/people', (req, res) => {
+  const { name } = req.body
+  if (!name) {
+    return res
+      .status(400)
+      .json({ success: false, msg: 'please provide name value' })
+  }
+  res.status(201).json({ success: true, person: name })
+})
+
+app.post('/api/postman/people', (req, res) => {
+  const { name } = req.body
+  if (!name) {
+    return res
+      .status(400)
+      .json({ success: false, msg: 'please provide name value' })
+  }
+  res.status(201).json({ success: true, data: [...people, name] })
+})
+
+app.post('/login', (req, res) => {
+  const { name } = req.body
+  if (name) {
+    return res.status(200).send(`Welcome ${name}`)
+  }
+
+  res.status(401).send('Please Provide Credentials')
 })
 
 app.listen(5000, () => {
